@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook;
@@ -32,6 +34,7 @@ namespace TesteBackendEnContact.Controllers
         }
 
         [HttpGet]
+      
         public async Task<IEnumerable<IContactBook>> Get([FromServices] IContactBookRepository contactBookRepository)
         {
             return await contactBookRepository.GetAllAsync();

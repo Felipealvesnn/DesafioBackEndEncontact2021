@@ -72,6 +72,7 @@ namespace TesteBackendEnContact.Repository
     {
         [Key]
         public int Id { get; set; }
+
         public int ContactBookId { get; set; }
         public string Name { get; set; }
 

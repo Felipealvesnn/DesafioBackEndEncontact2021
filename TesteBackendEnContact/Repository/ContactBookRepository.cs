@@ -20,7 +20,6 @@ namespace TesteBackendEnContact.Repository
             this.databaseConfig = databaseConfig;
         }
 
-
         public async Task<IContactBook> SaveAsync(IContactBook contactBook)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
@@ -31,7 +30,6 @@ namespace TesteBackendEnContact.Repository
             return dao.Export();
         }
 
-
         public async Task DeleteAsync(int id)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
@@ -41,9 +39,6 @@ namespace TesteBackendEnContact.Repository
 
             await connection.ExecuteAsync(sql);
         }
-
-
-
 
         public async Task<IEnumerable<IContactBook>> GetAllAsync()
         {
@@ -62,6 +57,7 @@ namespace TesteBackendEnContact.Repository
 
             return returnList.ToList();
         }
+
         public async Task<IContactBook> GetAsync(int id)
         {
             var list = await GetAllAsync();
@@ -75,6 +71,7 @@ namespace TesteBackendEnContact.Repository
     {
         [Key]
         public int Id { get; set; }
+
         public string Name { get; set; }
 
         public ContactBookDao()
@@ -84,7 +81,7 @@ namespace TesteBackendEnContact.Repository
         public ContactBookDao(IContactBook contactBook)
         {
             Id = contactBook.Id;
-            Name = Name;
+            Name = contactBook.Name;
         }
 
         public IContactBook Export() => new ContactBook(Id, Name);

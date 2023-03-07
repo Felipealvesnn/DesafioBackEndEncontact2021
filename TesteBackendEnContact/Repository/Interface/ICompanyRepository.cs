@@ -7,8 +7,11 @@ namespace TesteBackendEnContact.Repository.Interface
     public interface ICompanyRepository
     {
         Task<ICompany> SaveAsync(ICompany company);
+
         Task DeleteAsync(int id);
+
         Task<IEnumerable<ICompany>> GetAllAsync();
+
         Task<ICompany> GetAsync(int id);
     }
 }
