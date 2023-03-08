@@ -1,7 +1,9 @@
-﻿using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 
 namespace TesteBackendEnContact.Core.Domain
 {
+    [Table("Company")]
     public class Company : ICompany
     {
         public int Id { get; private set; }

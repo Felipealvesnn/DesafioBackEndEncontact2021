@@ -45,7 +45,7 @@ namespace TesteBackendEnContact.Controllers
             return await companyRepository.GetAsync(id);
         }
         [HttpPut]
-        public async Task<ActionResult> Put(int id, CompanyDao company, [FromServices] ICompanyRepository _CompanyRepository)
+        public async Task<ActionResult> Put(int id, Company company, [FromServices] ICompanyRepository _CompanyRepository)
         {
             if (id != company.Id)
                 return BadRequest();

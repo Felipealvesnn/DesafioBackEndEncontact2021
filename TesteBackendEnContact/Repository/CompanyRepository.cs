@@ -65,11 +65,12 @@ namespace TesteBackendEnContact.Repository
 
             var query = $"SELECT * FROM Company where Id = {id}";
             var result = await connection.QuerySingleOrDefaultAsync<CompanyDao>(query, new { id });
+            var export = result?.Export();
 
-            return result?.Export();
+            return export;
         }
-
-        public async Task<ICompany> Update(ICompany company)
+     
+        public async Task<Company> Update(Company company)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
@@ -80,7 +81,7 @@ namespace TesteBackendEnContact.Repository
 
                 try
                 {
-                    await connection.UpdateAsync<ContactBook>((ContactBook)company);
+                    await connection.UpdateAsync<Company>(company);
                 }
                 catch (Exception ex)
                 {
@@ -94,6 +95,8 @@ namespace TesteBackendEnContact.Repository
             return company;
 
         }
+
+       
     }
 
     [Table("Company")]
