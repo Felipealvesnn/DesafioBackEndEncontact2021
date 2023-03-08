@@ -3,7 +3,9 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models;
+using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+using TesteBackendEnContact.Repository;
 using TesteBackendEnContact.Repository.Interface;
 
 namespace TesteBackendEnContact.Controllers
@@ -41,6 +43,19 @@ namespace TesteBackendEnContact.Controllers
         public async Task<ICompany> Get(int id, [FromServices] ICompanyRepository companyRepository)
         {
             return await companyRepository.GetAsync(id);
+        }
+        [HttpPut]
+        public async Task<ActionResult> Put(int id, CompanyDao company, [FromServices] ICompanyRepository _CompanyRepository)
+        {
+            if (id != company.Id)
+                return BadRequest();
+
+            if (company == null)
+                return BadRequest();
+
+            await _CompanyRepository.Update(company);
+
+            return Ok(company);
         }
     }
 }

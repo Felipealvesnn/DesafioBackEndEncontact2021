@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TesteBackendEnContact.Core.Domain.ContactBook.Company;
+using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 
 namespace TesteBackendEnContact.Controllers.Models

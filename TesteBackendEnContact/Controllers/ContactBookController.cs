@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Domain.ContactBook;
+using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Repository.Interface;
 
@@ -15,35 +15,59 @@ namespace TesteBackendEnContact.Controllers
     public class ContactBookController : ControllerBase
     {
         private readonly ILogger<ContactBookController> _logger;
+        private readonly IContactBookRepository _contactBookRepository;
 
-        public ContactBookController(ILogger<ContactBookController> logger)
+        public ContactBookController(ILogger<ContactBookController> logger, IContactBookRepository contactBookRepository)
         {
             _logger = logger;
+            _contactBookRepository = contactBookRepository;
         }
 
         [HttpPost]
-        public async Task<IContactBook> Post(ContactBook contactBook, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task<IContactBook> Post(ContactBook contactBook)
         {
-            return await contactBookRepository.SaveAsync(contactBook);
+            return await _contactBookRepository.SaveAsync(contactBook);
         }
 
         [HttpDelete]
-        public async Task Delete(int id, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task Delete(int id)
         {
-            await contactBookRepository.DeleteAsync(id);
+            await _contactBookRepository.DeleteAsync(id);
         }
 
         [HttpGet]
       
-        public async Task<IEnumerable<IContactBook>> Get([FromServices] IContactBookRepository contactBookRepository)
+        public async Task<ActionResult> Get()
         {
-            return await contactBookRepository.GetAllAsync();
+            
+            return Ok(await _contactBookRepository.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<IContactBook> Get(int id, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task<ActionResult> Get(int id)
         {
-            return await contactBookRepository.GetAsync(id);
+            var contactBook = await _contactBookRepository.GetAsync(id);
+            if (contactBook == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(contactBook);
+            }
+        }
+        [HttpPut]
+        public async Task<ActionResult> Put(int id, ContactBook contactBook)
+        {
+            if (id != contactBook.Id)
+                return BadRequest();
+
+            if (contactBook == null)
+                return BadRequest();
+
+            await _contactBookRepository.Update(contactBook);
+
+            return Ok(contactBook);
         }
     }
 }

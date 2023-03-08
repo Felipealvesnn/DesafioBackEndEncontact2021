@@ -1,10 +1,14 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Domain.ContactBook;
+using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Database;
 using TesteBackendEnContact.Repository.Interface;
@@ -26,7 +30,7 @@ namespace TesteBackendEnContact.Repository
             var dao = new ContactBookDao(contactBook);
 
             dao.Id = await connection.InsertAsync(dao);
-
+            connection.Close();
             return dao.Export();
         }
 
@@ -34,10 +38,10 @@ namespace TesteBackendEnContact.Repository
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
-            // TODO
-            var sql = "";
+            var query = $"DELETE FROM ContactBook WHERE Id = {id};";
+            await connection.QuerySingleOrDefaultAsync(query);
+              await connection.CloseAsync();
 
-            await connection.ExecuteAsync(sql);
         }
 
         public async Task<IEnumerable<IContactBook>> GetAllAsync()
@@ -54,36 +58,70 @@ namespace TesteBackendEnContact.Repository
                 IContactBook Agenda = new ContactBook(AgendaSalva.Id, AgendaSalva.Name.ToString());
                 returnList.Add(Agenda);
             }
-
+            connection.Close();
             return returnList.ToList();
         }
 
         public async Task<IContactBook> GetAsync(int id)
         {
-            var list = await GetAllAsync();
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+            var query = $"SELECT * FROM ContactBook where Id ={id};";
+            var result = await connection.QueryFirstOrDefaultAsync<ContactBook>(query);
+            connection.Close();
+            return result;
 
-            return list.ToList().Where(item => item.Id == id).FirstOrDefault();
+
         }
-    }
 
-    [Table("ContactBook")]
-    public class ContactBookDao : IContactBook
-    {
-        [Key]
-        public int Id { get; set; }
-
-        public string Name { get; set; }
-
-        public ContactBookDao()
+        public async Task<IContactBook> Update(IContactBook contactBook)
         {
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            var testar = await GetAsync(contactBook.Id);
+            var dao = new ContactBookDao(testar);
+            if (testar != null)
+            {
+
+                try
+                {
+                    await connection.UpdateAsync<ContactBook>((ContactBook)contactBook);
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+                connection.Close();
+                return contactBook;
+            }
+           
+                return contactBook;
+
+
+           
+
+         
         }
 
-        public ContactBookDao(IContactBook contactBook)
+        [Table("ContactBook")]
+        public class ContactBookDao : IContactBook
         {
-            Id = contactBook.Id;
-            Name = contactBook.Name;
-        }
+            [Key]
+            public int Id { get; set; }
 
-        public IContactBook Export() => new ContactBook(Id, Name);
+            public string Name { get; set; }
+
+            public ContactBookDao()
+            {
+            }
+
+            public ContactBookDao(IContactBook contactBook)
+            {
+                Id= contactBook.Id;
+                Name = contactBook.Name;
+            }
+
+            public IContactBook Export() => new ContactBook(Id, Name);
+        }
     }
 }

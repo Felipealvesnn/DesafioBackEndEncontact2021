@@ -1,14 +1,17 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Domain.ContactBook.Company;
+using TesteBackendEnContact.Core.Domain;
+using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 using TesteBackendEnContact.Database;
 using TesteBackendEnContact.Repository.Interface;
+using static TesteBackendEnContact.Repository.ContactBookRepository;
 
 namespace TesteBackendEnContact.Repository
 {
@@ -40,8 +43,8 @@ namespace TesteBackendEnContact.Repository
             using var transaction = connection.BeginTransaction();
 
             var sql = new StringBuilder();
-            sql.AppendLine("DELETE FROM Company WHERE Id = @id;");
-            sql.AppendLine("UPDATE Contact SET CompanyId = null WHERE CompanyId = @id;");
+            sql.AppendLine($"DELETE FROM Company WHERE Id = {id};");
+            sql.AppendLine($"UPDATE Contact SET CompanyId = null WHERE CompanyId = {id};");
 
             await connection.ExecuteAsync(sql.ToString(), new { id }, transaction);
         }
@@ -60,10 +63,36 @@ namespace TesteBackendEnContact.Repository
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
-            var query = "SELECT * FROM Conpany where Id = @id";
+            var query = $"SELECT * FROM Company where Id = {id}";
             var result = await connection.QuerySingleOrDefaultAsync<CompanyDao>(query, new { id });
 
             return result?.Export();
+        }
+
+        public async Task<ICompany> Update(ICompany company)
+        {
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            var testar = await GetAsync(company.Id);
+          
+            if (testar != null)
+            {
+
+                try
+                {
+                    await connection.UpdateAsync<ContactBook>((ContactBook)company);
+                }
+                catch (Exception ex)
+                {
+
+                    throw;
+                }
+                connection.Close();
+                return company;
+            }
+
+            return company;
+
         }
     }
 
