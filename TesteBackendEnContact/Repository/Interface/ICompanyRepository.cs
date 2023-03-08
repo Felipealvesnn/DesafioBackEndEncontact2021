@@ -14,6 +14,6 @@ namespace TesteBackendEnContact.Repository.Interface
         Task<IEnumerable<ICompany>> GetAllAsync();
 
         Task<ICompany> GetAsync(int id);
-        Task<IContactBook> Update(ICompany company);
+        Task<ICompany> Update(ICompany company);
     }
 }
