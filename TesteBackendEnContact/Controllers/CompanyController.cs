@@ -33,6 +33,13 @@ namespace TesteBackendEnContact.Controllers
         {
             await companyRepository.DeleteAsync(id);
         }
+        [HttpGet("{nome}")]
+
+        public async Task<ActionResult> GetContatosDaEmpresa(string nome, [FromServices] ICompanyRepository companyRepository)
+        {
+
+            return Ok(await companyRepository.GetAllAsync());
+        }
 
         [HttpGet]
         public async Task<ActionResult> Get([FromServices] ICompanyRepository companyRepository)

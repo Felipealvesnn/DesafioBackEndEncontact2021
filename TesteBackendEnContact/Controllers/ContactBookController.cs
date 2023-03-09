@@ -51,13 +51,7 @@ namespace TesteBackendEnContact.Controllers
             
             return Ok(await _contactBookRepository.GetAllAsync());
         }
-        [HttpGet("{nome}")]
-
-        public async Task<ActionResult> GetContatosDaEmpresa(string nome)
-        {
-
-            return Ok(await _contactBookRepository.GetAllAsync());
-        }
+       
 
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id)
