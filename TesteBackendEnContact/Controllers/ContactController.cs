@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Repository.Interface;
@@ -21,22 +19,20 @@ namespace TesteBackendEnContact.Controllers
             _IContactRepository = iContactRepository;
         }
 
-
-
         // GET: api/<ValuesController>
         [HttpGet]
         public async Task<ActionResult> Get()
         {
             return Ok(await _IContactRepository.GetAllAsync());
         }
+
         // GET: api/<ValuesController>
         [HttpGet("Nome")]
         public async Task<ActionResult> GetForNome(string Nome)
         {
             var result = await _IContactRepository.GetContatosForNome(Nome);
             if (result != null) return Ok(result);
-            else return Ok(new {Erro = "Nao existe ninguem com esse nome" });
-
+            else return Ok(new { Erro = "Nao existe ninguem com esse nome" });
         }
 
         // GET api/<ValuesController>/5
@@ -50,11 +46,11 @@ namespace TesteBackendEnContact.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(Contact contato)
         {
-           var result = await _IContactRepository.SaveAsync(contato);
+            var result = await _IContactRepository.SaveAsync(contato);
             if (result == 1) return Ok();
             else return BadRequest();
-
         }
+
         // POST api/<ValuesController>
         [HttpPost("Execel")]
         public async Task<ActionResult> PostExcel(Contact contato)
@@ -62,7 +58,6 @@ namespace TesteBackendEnContact.Controllers
             var result = await _IContactRepository.SaveAsync(contato);
             if (result == 1) return Ok();
             else return BadRequest();
-
         }
 
         // PUT api/<ValuesController>/5

@@ -7,11 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
-using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 using TesteBackendEnContact.Database;
 using TesteBackendEnContact.Repository.Interface;
-using static TesteBackendEnContact.Repository.ContactBookRepository;
 
 namespace TesteBackendEnContact.Repository
 {
@@ -30,7 +28,6 @@ namespace TesteBackendEnContact.Repository
             var dao = new CompanyDao(company);
 
             if (dao.Id == 0) dao.Id = await connection.InsertAsync(dao);
-
             else await connection.UpdateAsync(dao);
 
             connection.Close();
@@ -40,7 +37,6 @@ namespace TesteBackendEnContact.Repository
         public async Task DeleteAsync(int id)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
-         
 
             var sql = new StringBuilder();
             sql.AppendLine($"DELETE FROM Company WHERE Id = {id};");
@@ -70,23 +66,21 @@ namespace TesteBackendEnContact.Repository
             connection.Close();
             return export;
         }
-     
+
         public async Task<Company> Update(Company company)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
             var testar = await GetAsync(company.Id);
-          
+
             if (testar != null)
             {
-
                 try
                 {
                     await connection.UpdateAsync<Company>(company);
                 }
                 catch (Exception ex)
                 {
-
                     throw;
                 }
                 connection.Close();
@@ -94,10 +88,7 @@ namespace TesteBackendEnContact.Repository
             }
 
             return company;
-
         }
-
-       
     }
 
     [Table("Company")]

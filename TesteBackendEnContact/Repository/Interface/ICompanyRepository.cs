@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
-using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
 
 namespace TesteBackendEnContact.Repository.Interface
@@ -15,6 +14,7 @@ namespace TesteBackendEnContact.Repository.Interface
         Task<IEnumerable<ICompany>> GetAllAsync();
 
         Task<ICompany> GetAsync(int id);
+
         Task<Company> Update(Company company);
     }
 }

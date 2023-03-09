@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Repository.Interface;
-using static System.Net.WebRequestMethods;
 
 namespace TesteBackendEnContact.Controllers
 {
@@ -34,24 +29,21 @@ namespace TesteBackendEnContact.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var result =  Get(id);
-            if (result == null) { 
-            return NotFound();
-            
-            } 
+            var result = Get(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
             await _contactBookRepository.DeleteAsync(id);
 
             return Ok();
         }
 
         [HttpGet]
-      
         public async Task<ActionResult> Get()
         {
-            
             return Ok(await _contactBookRepository.GetAllAsync());
         }
-       
 
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id)
@@ -66,6 +58,7 @@ namespace TesteBackendEnContact.Controllers
                 return Ok(contactBook);
             }
         }
+
         [HttpPut]
         public async Task<ActionResult> Put(int id, ContactBook contactBook)
         {

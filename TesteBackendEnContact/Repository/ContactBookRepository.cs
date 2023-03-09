@@ -1,12 +1,9 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook;
@@ -40,8 +37,7 @@ namespace TesteBackendEnContact.Repository
 
             var query = $"DELETE FROM ContactBook WHERE Id = {id};";
             await connection.QuerySingleOrDefaultAsync(query);
-              await connection.CloseAsync();
-
+            await connection.CloseAsync();
         }
 
         public async Task<IEnumerable<IContactBook>> GetAllAsync()
@@ -69,8 +65,6 @@ namespace TesteBackendEnContact.Repository
             var result = await connection.QueryFirstOrDefaultAsync<ContactBook>(query);
             connection.Close();
             return result;
-
-
         }
 
         public async Task<IContactBook> GetContatosDaEmpresa(string nome)
@@ -80,8 +74,6 @@ namespace TesteBackendEnContact.Repository
             var result = await connection.QueryFirstOrDefaultAsync<ContactBook>(query);
             connection.Close();
             return result;
-
-
         }
 
         public async Task<IContactBook> Update(IContactBook contactBook)
@@ -92,26 +84,19 @@ namespace TesteBackendEnContact.Repository
             var dao = new ContactBookDao(testar);
             if (testar != null)
             {
-
                 try
                 {
                     await connection.UpdateAsync<ContactBook>((ContactBook)contactBook);
                 }
                 catch (Exception ex)
                 {
-
                     throw;
                 }
                 connection.Close();
                 return contactBook;
             }
-           
-                return contactBook;
 
-
-           
-
-         
+            return contactBook;
         }
 
         [Table("ContactBook")]
@@ -129,7 +114,7 @@ namespace TesteBackendEnContact.Repository
 
             public ContactBookDao(IContactBook contactBook)
             {
-                Id= contactBook.Id;
+                Id = contactBook.Id;
                 Name = contactBook.Name;
             }
 

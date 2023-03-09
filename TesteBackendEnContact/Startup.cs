@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 using System;
 using TesteBackendEnContaact_Infra_IOC;
@@ -30,10 +29,7 @@ namespace TesteBackendEnContact
             //ativar e validar a autentificação do token
             services.AddSegurancaJWT(Configuration);
             services.ConfiguracoesSweeger();
-            
-           
-           
-            
+
             services.AddFluentMigratorCore()
                     .ConfigureRunner(rb => rb
                         .AddSQLite()

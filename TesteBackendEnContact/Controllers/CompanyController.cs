@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook.Company;
-using TesteBackendEnContact.Repository;
 using TesteBackendEnContact.Repository.Interface;
 
 namespace TesteBackendEnContact.Controllers
@@ -33,11 +30,10 @@ namespace TesteBackendEnContact.Controllers
         {
             await companyRepository.DeleteAsync(id);
         }
-        [HttpGet("{nome}")]
 
+        [HttpGet("{nome}")]
         public async Task<ActionResult> GetContatosDaEmpresa(string nome, [FromServices] ICompanyRepository companyRepository)
         {
-
             return Ok(await companyRepository.GetAllAsync());
         }
 
@@ -49,16 +45,16 @@ namespace TesteBackendEnContact.Controllers
 
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id, [FromServices] ICompanyRepository companyRepository)
-        { var model = await companyRepository.GetAsync(id);
+        {
+            var model = await companyRepository.GetAsync(id);
 
-            if (model == null) {
-
+            if (model == null)
+            {
                 return NotFound();
             }
             return Ok(model);
-           
-            
         }
+
         [HttpPut]
         public async Task<ActionResult> Put(int id, Company company, [FromServices] ICompanyRepository _CompanyRepository)
         {

@@ -3,7 +3,6 @@ using Dapper.Contrib.Extensions;
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Database;
@@ -14,7 +13,7 @@ namespace TesteBackendEnContact.Repository
     public class ContactRepository : IContactRepository
     {
         private readonly DatabaseConfig databaseConfig;
-        
+
         public ContactRepository(DatabaseConfig databaseConfig)
         {
             this.databaseConfig = databaseConfig;
@@ -28,7 +27,7 @@ namespace TesteBackendEnContact.Repository
             await connection.QuerySingleOrDefaultAsync(query);
             await connection.CloseAsync();
         }
-        
+
         public async Task<IEnumerable<Contact>> GetAllAsync()
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
@@ -50,7 +49,7 @@ namespace TesteBackendEnContact.Repository
 
             var query = $"SELECT * FROM Contact WHERE Name LIKE '%{nome}%' ";
             var result = await connection.QueryFirstOrDefaultAsync<Contact>(query);
-         
+
             connection.Close();
             return result;
         }
@@ -58,9 +57,9 @@ namespace TesteBackendEnContact.Repository
         public async Task<int> SaveAsync(Contact contact)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
-           
-           var result =  await connection.InsertAsync(contact);
-        
+
+            var result = await connection.InsertAsync(contact);
+
             connection.Close();
             return result;
         }
@@ -71,12 +70,14 @@ namespace TesteBackendEnContact.Repository
         }
 
         [System.ComponentModel.DataAnnotations.Schema.Table("Contact")]
-        public class ContactDto 
+        public class ContactDto
         {
             [System.ComponentModel.DataAnnotations.Key]
             public int Id { get; set; }
+
             [Required]
             public int ContactBookId { get; set; }
+
             public int CompanyId { get; set; }
             public string Name { get; set; }
             public string Phone { get; set; }

@@ -13,7 +13,7 @@ namespace TesteBackendEnContact.Repository.Interface
         Task<IEnumerable<IContactBook>> GetAllAsync();
 
         Task<IContactBook> GetAsync(int id);
-        Task<IContactBook> Update(IContactBook contactBook);
 
+        Task<IContactBook> Update(IContactBook contactBook);
     }
 }
