@@ -16,6 +16,10 @@ namespace TesteBackendEnContact.Core.Domain
             Address = address;
         }
 
+        public Contact()
+        {
+        }
+
         [Key]
         public int Id { get; set; }
         public int ContactBookId { get; set; }

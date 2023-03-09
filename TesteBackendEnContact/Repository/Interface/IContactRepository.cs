@@ -8,7 +8,7 @@ namespace TesteBackendEnContact.Repository.Interface
     public interface IContactRepository
     {
         
-        Task<Contact> SaveAsync(Contact company);
+        Task<int> SaveAsync(Contact company);
 
         Task DeleteAsync(int id);
 

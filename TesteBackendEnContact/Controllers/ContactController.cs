@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.Threading.Tasks;
+using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Repository.Interface;
 
 namespace TesteBackendEnContact.Controllers
@@ -22,9 +25,18 @@ namespace TesteBackendEnContact.Controllers
 
         // GET: api/<ValuesController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok(await _IContactRepository.GetAllAsync());
+        }
+        // GET: api/<ValuesController>
+        [HttpGet("Nome")]
+        public async Task<ActionResult> GetForNome(string Nome)
+        {
+            var result = await _IContactRepository.GetContatosForNome(Nome);
+            if (result != null) return Ok();
+            else return Ok(new {Erro = "Nao existe ninguem com esse nome" });
+
         }
 
         // GET api/<ValuesController>/5
@@ -36,8 +48,12 @@ namespace TesteBackendEnContact.Controllers
 
         // POST api/<ValuesController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult> Post(Contact contato)
         {
+           var result = await _IContactRepository.SaveAsync(contato);
+            if (result == 1) return Ok();
+            else return BadRequest();
+
         }
 
         // PUT api/<ValuesController>/5

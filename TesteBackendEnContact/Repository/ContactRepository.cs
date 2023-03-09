@@ -3,10 +3,9 @@ using Dapper.Contrib.Extensions;
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
-using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Database;
 using TesteBackendEnContact.Repository.Interface;
 
@@ -29,13 +28,18 @@ namespace TesteBackendEnContact.Repository
             await connection.QuerySingleOrDefaultAsync(query);
             await connection.CloseAsync();
         }
-
-        public Task<IEnumerable<Contact>> GetAllAsync()
+        
+        public async Task<IEnumerable<Contact>> GetAllAsync()
         {
-            throw new System.NotImplementedException();
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            var query = "SELECT * FROM Contact";
+            var result = await connection.QueryAsync<Contact>(query);
+            connection.Close();
+            return result;
         }
 
-        public Task<Contact> GetAsync(int id)
+        public async Task<Contact> GetAsync(int id)
         {
             throw new System.NotImplementedException();
         }
@@ -44,21 +48,21 @@ namespace TesteBackendEnContact.Repository
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
-            var query = $"SELECT * FROM Contact WHERE CONTAINS(Name, '{nome}') ";
-            var result = await connection.QuerySingleOrDefaultAsync<Contact>(query);
+            var query = $"SELECT * FROM Contact WHERE Name LIKE '%{nome}%' ";
+            var result = await connection.QueryFirstOrDefaultAsync<Contact>(query);
          
             connection.Close();
             return result;
         }
 
-        public async Task<Contact> SaveAsync(Contact contact)
+        public async Task<int> SaveAsync(Contact contact)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
            
-          await connection.InsertAsync(contact);
+           var result =  await connection.InsertAsync(contact);
         
             connection.Close();
-            return contact;
+            return result;
         }
 
         public Task<Company> Update(Company company)
@@ -66,10 +70,10 @@ namespace TesteBackendEnContact.Repository
             throw new System.NotImplementedException();
         }
 
-        [Table("Contact")]
+        [System.ComponentModel.DataAnnotations.Schema.Table("Contact")]
         public class ContactDto 
         {
-            [Key]
+            [System.ComponentModel.DataAnnotations.Key]
             public int Id { get; set; }
             [Required]
             public int ContactBookId { get; set; }
