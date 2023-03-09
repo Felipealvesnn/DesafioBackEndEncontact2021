@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Core.Interface.ContactBook;
 using TesteBackendEnContact.Repository.Interface;
+using static System.Net.WebRequestMethods;
 
 namespace TesteBackendEnContact.Controllers
 {
@@ -29,10 +31,17 @@ namespace TesteBackendEnContact.Controllers
             return await _contactBookRepository.SaveAsync(contactBook);
         }
 
-        [HttpDelete]
-        public async Task Delete(int id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
+            var result =  Get(id);
+            if (result == null) { 
+            return NotFound();
+            
+            } 
             await _contactBookRepository.DeleteAsync(id);
+
+            return Ok();
         }
 
         [HttpGet]
@@ -40,6 +49,13 @@ namespace TesteBackendEnContact.Controllers
         public async Task<ActionResult> Get()
         {
             
+            return Ok(await _contactBookRepository.GetAllAsync());
+        }
+        [HttpGet("{nome}")]
+
+        public async Task<ActionResult> GetContatosDaEmpresa(string nome)
+        {
+
             return Ok(await _contactBookRepository.GetAllAsync());
         }
 

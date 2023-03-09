@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\TesteBackendEnContact",
+    "\\TesteBackendEnContact\\Controllers",
+    "\\TesteBackendEnContact\\Repository"
   ],
-  "SelectedNode": "\\TesteBackendEnContact.sln",
+  "SelectedNode": "\\TesteBackendEnContact\\Controllers\\CompanyController.cs",
   "PreviewInSolutionExplorer": false
 }

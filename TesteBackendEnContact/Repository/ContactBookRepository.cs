@@ -73,6 +73,17 @@ namespace TesteBackendEnContact.Repository
 
         }
 
+        public async Task<IContactBook> GetContatosDaEmpresa(string nome)
+        {
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+            var query = $"SELECT * FROM ContactBook where Id ={nome};";
+            var result = await connection.QueryFirstOrDefaultAsync<ContactBook>(query);
+            connection.Close();
+            return result;
+
+
+        }
+
         public async Task<IContactBook> Update(IContactBook contactBook)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
@@ -110,6 +121,7 @@ namespace TesteBackendEnContact.Repository
             public int Id { get; set; }
 
             public string Name { get; set; }
+            public List<Contact> ListContacts { get; set; }
 
             public ContactBookDao()
             {

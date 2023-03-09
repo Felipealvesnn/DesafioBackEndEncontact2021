@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Controllers.Models;
 using TesteBackendEnContact.Core.Domain;
@@ -34,15 +35,22 @@ namespace TesteBackendEnContact.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ICompany>> Get([FromServices] ICompanyRepository companyRepository)
+        public async Task<ActionResult> Get([FromServices] ICompanyRepository companyRepository)
         {
-            return await companyRepository.GetAllAsync();
+            return Ok(await companyRepository.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<ICompany> Get(int id, [FromServices] ICompanyRepository companyRepository)
-        {
-            return await companyRepository.GetAsync(id);
+        public async Task<ActionResult> Get(int id, [FromServices] ICompanyRepository companyRepository)
+        { var model = await companyRepository.GetAsync(id);
+
+            if (model == null) {
+
+                return NotFound();
+            }
+            return Ok(model);
+           
+            
         }
         [HttpPut]
         public async Task<ActionResult> Put(int id, Company company, [FromServices] ICompanyRepository _CompanyRepository)
