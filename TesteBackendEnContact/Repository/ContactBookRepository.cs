@@ -27,9 +27,11 @@ namespace TesteBackendEnContact.Repository
             var dao = new ContactBookDao(contactBook);
 
             dao.Id = await connection.InsertAsync(dao);
-            connection.Close();
             return dao.Export();
         }
+
+
+
 
         public async Task DeleteAsync(int id)
         {
@@ -37,25 +39,16 @@ namespace TesteBackendEnContact.Repository
 
             var query = $"DELETE FROM ContactBook WHERE Id = {id};";
             await connection.QuerySingleOrDefaultAsync(query);
-            await connection.CloseAsync();
         }
+
 
         public async Task<IEnumerable<IContactBook>> GetAllAsync()
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
             var query = "SELECT * FROM ContactBook";
-            var result = await connection.QueryAsync<ContactBookDao>(query);
-
-            var returnList = new List<IContactBook>();
-
-            foreach (var AgendaSalva in result.ToList())
-            {
-                IContactBook Agenda = new ContactBook(AgendaSalva.Id, AgendaSalva.Name.ToString());
-                returnList.Add(Agenda);
-            }
-            connection.Close();
-            return returnList.ToList();
+            var result = await connection.QueryAsync<ContactBook>(query);
+            return result.ToList();
         }
 
         public async Task<IContactBook> GetAsync(int id)
@@ -63,17 +56,15 @@ namespace TesteBackendEnContact.Repository
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
             var query = $"SELECT * FROM ContactBook where Id ={id};";
             var result = await connection.QueryFirstOrDefaultAsync<ContactBook>(query);
-            connection.Close();
             return result;
         }
 
-        public async Task<IContactBook> GetContatosDaEmpresa(string nome)
+        public async Task<IEnumerable<IContactBook>> GetContatosDaEmpresa(string nome)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
-            var query = $"SELECT * FROM ContactBook where Id ={nome};";
-            var result = await connection.QueryFirstOrDefaultAsync<ContactBook>(query);
-            connection.Close();
-            return result;
+            var query = $"SELECT * FROM ContactBook where Name ={nome};";
+            var result = await connection.QueryAsync<ContactBook>(query);
+            return result.ToList();
         }
 
         public async Task<IContactBook> Update(IContactBook contactBook)
@@ -92,7 +83,7 @@ namespace TesteBackendEnContact.Repository
                 {
                     throw;
                 }
-                connection.Close();
+              
                 return contactBook;
             }
 

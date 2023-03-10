@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Database;
@@ -25,7 +27,7 @@ namespace TesteBackendEnContact.Repository
 
             var query = $"DELETE FROM Contact WHERE Id = {id};";
             await connection.QuerySingleOrDefaultAsync(query);
-            await connection.CloseAsync();
+          
         }
 
         public async Task<IEnumerable<Contact>> GetAllAsync()
@@ -34,7 +36,7 @@ namespace TesteBackendEnContact.Repository
 
             var query = "SELECT * FROM Contact";
             var result = await connection.QueryAsync<Contact>(query);
-            connection.Close();
+           
             return result;
         }
 
@@ -43,30 +45,54 @@ namespace TesteBackendEnContact.Repository
             throw new System.NotImplementedException();
         }
 
-        public async Task<Contact> GetContatosForNome(string nome)
+        public async Task<IEnumerable<Contact>> GetContatosForNome(string String, int pageSize=10, int pageNumber=1)
         {
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+            var offset = (pageNumber - 1) * pageSize;
+            var query = $"SELECT * FROM Contact WHERE Name LIKE '%{String}%' OR " +
+                        $"Phone LIKE '%{String}%' OR " +
+                        $"Email LIKE '%{String}%' OR " +
+                        $"Address LIKE '%{String}%' OR " +
+                        $"CompanyId IN (SELECT Id FROM Company WHERE Name LIKE '%{String}%') " +
+                        $"ORDER BY Name " +
+                        $"LIMIT {pageSize} " +
+                        $"OFFSET {offset}";
+            //var query2 = $"SELECT * FROM Contact WHERE Name LIKE '%{String}%'  ";
 
-            var query = $"SELECT * FROM Contact WHERE Name LIKE '%{nome}%' ";
-            var result = await connection.QueryFirstOrDefaultAsync<Contact>(query);
+           var results = await connection.QueryAsync<Contact>(query);
 
-            connection.Close();
-            return result;
+            return results;
         }
 
         public async Task<int> SaveAsync(Contact contact)
         {
+            
             using var connection = new SqliteConnection(databaseConfig.ConnectionString);
 
             var result = await connection.InsertAsync(contact);
 
-            connection.Close();
+           
+            return result;
+        }
+        public async Task<int> SaveAsyncList(List<Contact> contact)
+        {
+
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            var result = await connection.InsertAsync(contact);
+
+
             return result;
         }
 
-        public Task<Company> Update(Company company)
+        public async Task<Contact> Update(Contact contact)
         {
-            throw new System.NotImplementedException();
+            using var connection = new SqliteConnection(databaseConfig.ConnectionString);
+
+            var query = $"UPDATE Company SET Name = '{contact.Name}', Address = '{contact.Address}' WHERE Id = {contact.Id}";
+            await connection.ExecuteAsync(query);
+
+            return contact;
         }
 
         [System.ComponentModel.DataAnnotations.Schema.Table("Contact")]

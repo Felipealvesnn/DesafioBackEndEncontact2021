@@ -7,15 +7,16 @@ namespace TesteBackendEnContact.Repository.Interface
     public interface IContactRepository
     {
         Task<int> SaveAsync(Contact company);
-
+        Task<int> SaveAsyncList(List<Contact> company);
+        
         Task DeleteAsync(int id);
 
         Task<IEnumerable<Contact>> GetAllAsync();
 
         Task<Contact> GetAsync(int id);
 
-        Task<Contact> GetContatosForNome(string nome);
+        Task<IEnumerable<Contact>> GetContatosForNome(string String, int pageSize = 10, int pageNumber = 1);
 
-        Task<Company> Update(Company company);
+        Task<Contact> Update(Contact company);
     }
 }

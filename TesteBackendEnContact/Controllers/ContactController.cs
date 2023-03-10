@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using TesteBackendEnContact.Core.Domain;
 using TesteBackendEnContact.Repository.Interface;
@@ -26,15 +30,21 @@ namespace TesteBackendEnContact.Controllers
             return Ok(await _IContactRepository.GetAllAsync());
         }
 
-        // GET: api/<ValuesController>
-        [HttpGet("Nome")]
-        public async Task<ActionResult> GetForNome(string Nome)
-        {
-            var result = await _IContactRepository.GetContatosForNome(Nome);
-            if (result != null) return Ok(result);
-            else return Ok(new { Erro = "Nao existe ninguem com esse nome" });
-        }
+     
 
+        [HttpGet("Nome")]
+        public async Task<ActionResult> GetForNome(string nome, int pageSize = 10, int pageNumber = 1)
+        {
+            var result = await _IContactRepository.GetContatosForNome(nome, pageSize, pageNumber);
+            if (result == null)
+            {
+                return NotFound(new { Erro = "Nao existe ninguem com esse nome" });
+            }
+            else
+            {
+                return Ok(result);
+            }
+        }
         // GET api/<ValuesController>/5
         [HttpGet("{id}")]
         public string Get(int id)
@@ -46,18 +56,54 @@ namespace TesteBackendEnContact.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(Contact contato)
         {
-            var result = await _IContactRepository.SaveAsync(contato);
-            if (result == 1) return Ok();
-            else return BadRequest();
+            try
+            {
+                var id = await _IContactRepository.SaveAsync(contato);
+                return Ok(new { id = id });
+            }
+            catch (Exception ex)
+            {
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while saving the contact.");
+            }
+
         }
 
         // POST api/<ValuesController>
         [HttpPost("Execel")]
-        public async Task<ActionResult> PostExcel(Contact contato)
+        public async Task<ActionResult> PostExcel(IFormFile file)
         {
-            var result = await _IContactRepository.SaveAsync(contato);
-            if (result == 1) return Ok();
-            else return BadRequest();
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                var contacts = new List<Contact>();
+
+                // Ler o arquivo CSV
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+
+                    // Criar um objeto Contact para cada linha do arquivo CSV
+                    var contact = new Contact
+                    {
+                        Id= int.Parse(values[0]),
+                        Name = values[1],
+                        Email = values[2],
+                        Phone = values[3],
+                        Address = values[4],
+                        CompanyId = int.Parse(values[5]),
+                        ContactBookId = int.Parse(values[6]),
+                        
+                    };
+
+                    contacts.Add(contact);
+                }
+
+                // Salvar os contatos no banco de dados ou fazer qualquer outra ação necessária
+                // ...
+                await _IContactRepository.SaveAsyncList(contacts);
+                return Ok();
+            }
         }
 
         // PUT api/<ValuesController>/5

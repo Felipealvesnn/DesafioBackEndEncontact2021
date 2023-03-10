@@ -34,13 +34,19 @@ namespace TesteBackendEnContact
                     .ConfigureRunner(rb => rb
                         .AddSQLite()
                         .WithGlobalConnectionString(Configuration.GetConnectionString("DefaultConnection"))
-                        .ScanIn(typeof(Startup).Assembly).For.Migrations())
+                        .ScanIn(typeof(ADDFK).Assembly).For.Migrations())
                     .AddLogging(lb => lb.AddFluentMigratorConsole());
 
             services.AddSingleton(new DatabaseConfig { ConnectionString = Configuration.GetConnectionString("DefaultConnection") });
             services.AddScoped<IContactBookRepository, ContactBookRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
+
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = int.MaxValue;
+                options.AllowSynchronousIO = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
